@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email & Mobile Verification Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            padding: 50px;
+        }
+        .container {
+            background: beige;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        input {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            font-size: 90px;
+            height: 50px;
+            display: block;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 30px;
+        }
+        button:hover {
+            background: lightpink;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Email & Mobile Verification</h2>
+        <form id="verificationForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            <span id="emailError" class="error"></span>
+            
+            <label for="mobile">Mobile Number:</label>
+            <input type="text" id="mobile" required>
+            <span id="mobileError" class="error"></span>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        const emailInput = document.getElementById('email');
+        const mobileInput = document.getElementById('mobile');
+        const emailError = document.getElementById('emailError');
+        const mobileError = document.getElementById('mobileError');
+
+        const emailPattern =  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const mobilePattern = /^[0-9]{10}$/;
+
+        function validateEmail() {
+            emailError.textContent = emailPattern.test(emailInput.value) ? '' : 'Invalid email format';
+        }
+
+        function validateMobile() {
+            mobileError.textContent = mobilePattern.test(mobileInput.value) ? '' : 'Mobile number must be 10 digits';
+        }
+
+        emailInput.addEventListener('input', validateEmail);
+        mobileInput.addEventListener('input', validateMobile);
+
+        document.getElementById('verificationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            validateEmail();
+            validateMobile();
+
+            if (!emailError.textContent && !mobileError.textContent) {
+                alert('Form submitted successfully! Redirecting...');
+                window.location.href = "nextpage.html"; // Change this to your desired URL
+            }
+        });
+    </script>
+</body>
+</html>

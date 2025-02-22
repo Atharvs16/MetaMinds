@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Monitoring System</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        video {
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        #emotion {
+            font-weight: bold;
+            color: #FF5722;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mental Health Monitoring System</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <div id="status">Detecting facial expression...</div>
+
+    <script defer src="models/face_expression/face_expression_model-weights_manifest.json"></script>
+    <script defer src="models/tiny_face_detector/tiny_face_detector_model-weights_manifest.json"></script>
+    <script defer src="models/face_landmark_68/face_landmark_68_model-weights_manifest.json"></script>
+    <script>
+        const video = document.getElementById('video');
+        const statusElement = document.getElementById('status');
+
+        async function setupCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 640, height: 480 },
+                audio: false
+            });
+            video.srcObject = stream;
+        }
+
+        async function loadModels() {
+            await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+            await faceapi.nets.faceExpressionNet.loadFromUri('/models');
+        }
+
+        async function detectExpression() {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
+            if (detections.length > 0) {
+                const emotion = detections[0].expressions.asSortedArray()[0].expression;
+                statusElement.textContent = `Facial expression detected: ${emotion}`;
+            } else {
+                statusElement.textContent = 'No face detected';
+            }
+        }
+
+        setupCamera().then(() => {
+            loadModels().then(() => {
+                video.addEventListener('play', () => {
+                    setInterval(detectExpression, 1000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
